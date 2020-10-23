@@ -30,19 +30,31 @@
     </style>
   </head>
   <body>
-    <div style="text-align: center;">Create Lobby</div>
-    <div style="text-align: center;">
-        Name:
-        <input type="text">
-        <br>
-        <br>
-        Game Setting
-        <br>
-        width:
-        <input type="number" id='width'>
-        <br>
-        height:
-        <input type="number" id="height">
-    </div>
+    <section id="lobby">
+      <div style="text-align: center;">Create Lobby</div>
+      <div id="page" style="text-align: center;">
+          Name:
+          <input id="name" type="text">
+          <br>
+          <br>
+          Game Setting
+          <br>
+          width:
+          <input type="number" id='width' min="2" max="15">
+          <br>
+          height:
+          <input type="number" id="height" min="2" max="15">
+          <br>
+          amount in a row to win:
+          <input type="number" id="win_num" min="1" max="15">
+
+          <button onclick="submit();">Create Lobby</button>
+      </div>
+    </section>
+
+    <div style="text-align: center;" id="board" hidden></div>
+
+    <script src="create.js"></script>
+    <script src="board.js"></script>
   </body>
 </html>

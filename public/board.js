@@ -1,29 +1,33 @@
-var rows = 5;
-var colms = 7; 
-var win_sum = 4;
-var turn_num = 0;
-var board = [];
+var v_board;
+var board;
+var rows;
+var colms;
 
-function create_board() {
+
+function display_board() {
     var count = 0; 
+    console.log(id + "   " + user_name)
 
-    //rows = +prompt("Enter height"); 
-    //colms = +prompt("Enter width");
-    //win_sum = +prompt("Amount in a row to win")
+    const db = firebase.firestore();
+    const user_dt = db.collection("games").doc(id);
+    user_dt.get().then((user_doc) =>{
+        board = user_doc.data().board;
+        v_board = user_doc.data().board;
+        rows = parseInt(user_doc.data().size[0]);
+        colms = parseInt(user_doc.data().size[1]);
 
-    var s = "<table border='1' class='table'>";
-    for (let irow = 0; irow < rows; irow++) {
-        s += "<tr>";
-        board[irow] = [];
-        for (let icolm = 0; icolm < colms; icolm++) {
-            s += "<td id = '" + count.toString() + "'; onclick='move(this.id)'; width='50' height='50'> </td>";
-            board[irow][icolm] = 0;
-            count++;
+        var s = "<table border='1' class='table'>";
+        for (let irow = 0; irow < rows; irow++) {
+            s += "<tr>";
+            for (let icolm = 0; icolm < colms; icolm++) {
+                s += "<td id = '" + count.toString() + "'; onclick='move(this.id)'; width='50' height='50'> </td>";
+                count++;
+            }
+            s += "</tr>";
         }
-        s += "</tr>";
-    }
-    s += "</table>";
-    document.getElementById("board").innerHTML = s;
+        s += "</table>";
+        document.getElementById("board").innerHTML = s;
+    });
 }
 
 function move(id_string) {
@@ -157,3 +161,4 @@ function win_check(row, colm, turn, color) {
     if (sum >= win_sum)
         alert(color + " wins");
 }
+
