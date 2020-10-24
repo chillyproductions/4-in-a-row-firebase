@@ -1,26 +1,28 @@
-var v_board;
-var board;
+var board = [];
 var rows;
 var colms;
-
+var turn;
+var win_sum;
 
 function display_board() {
     var count = 0; 
-    console.log(id + "   " + user_name)
+    console.log(game_id + "   " + user_name)
 
     const db = firebase.firestore();
-    const user_dt = db.collection("games").doc(id);
+    const user_dt = db.collection("games").doc(game_id);
     user_dt.get().then((user_doc) =>{
-        board = user_doc.data().board;
-        v_board = user_doc.data().board;
-        rows = parseInt(user_doc.data().size[0]);
-        colms = parseInt(user_doc.data().size[1]);
+        rows = user_doc.data().size[0];
+        colms = user_doc.data().size[1];
+        turn = user_doc.data().turn;
+        win_sum = user_doc.data().win_sum;
 
         var s = "<table border='1' class='table'>";
         for (let irow = 0; irow < rows; irow++) {
             s += "<tr>";
+            board[irow] = [];
             for (let icolm = 0; icolm < colms; icolm++) {
                 s += "<td id = '" + count.toString() + "'; onclick='move(this.id)'; width='50' height='50'> </td>";
+                board[irow][icolm] = 0;
                 count++;
             }
             s += "</tr>";
@@ -39,8 +41,8 @@ function move(id_string) {
         if (board[irow][colm] != 0)
             break;
 
-    board[irow-1][colm] = turn_num % 2 + 1;
-    if (turn_num % 2 == 0) {
+    board[irow-1][colm] = turn % 2 + 1;
+    if (turn % 2 == 0) {
         document.getElementById(((irow - 1) * colms + colm).toString()).style.backgroundColor = 'green';
         color = "green";
     }
@@ -50,8 +52,8 @@ function move(id_string) {
         color = "blue"
     }
 
-    turn_num++;
-    win_check(irow - 1, colm, turn_num - 1, color);
+    turn++;
+    win_check(irow - 1, colm, turn - 1, color);
 }
 
 function win_check(row, colm, turn, color) {
