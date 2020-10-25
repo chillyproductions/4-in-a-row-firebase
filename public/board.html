@@ -29,11 +29,18 @@
       }
     </style>
   </head>
-  <body>
+  <body>    
+    <div style="text-align: center;" id="print_id"></div>
+    
     <div style="text-align: center;" id="board"></div>
 
-  <link rel="stylesheet" href="style.css">
-  
-  <script src="board.js"></script>
+    <div style="text-align: center;" border="1" id="chat_box">
+      <div id="chat"></div>
+      <input type="text" id="chat_text">
+      <button onclick="submit_chat();">Send</button>
+    </div>
+
+    <link rel="stylesheet" href="style.css">
+    <script src="board.js"></script>
   </body>
 </html>
