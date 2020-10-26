@@ -57,7 +57,7 @@ function move(id_string, turn) {
 
     draw(irow,colm,turn);
     
-    win_check(irow - 1, colm, turn, color);
+    win_check(irow - 1, colm, turn);
 }
 
 function win_check(row, colm, turn) {
