@@ -172,8 +172,6 @@ function try_move(id){
     const db = firebase.firestore();
     const user_dt = db.collection("games").doc(sessionStorage.getItem("id"));
     user_dt.get().then((doc) =>{
-        console.log(sessionStorage.getItem("first"));
-        console.log(doc.data().turn);
         if(doc.data().turn % 2 == 0 && sessionStorage.getItem("first") == "true"){
             move(id, doc.data().turn);
         }
@@ -203,11 +201,10 @@ function submit_chat(){
     const user_dt = db.collection("games").doc(sessionStorage.getItem("id"));
     var chat_text = document.getElementById("chat_text").value;
     user_dt.get().then((doc) =>{
-        user_dt.update({chat: doc.data().chat + chat_text +"<br>"});
+        user_dt.update({chat: doc.data().chat + localStorage.getItem("user_name") +":f " + chat_text +"<br>"});
     });
     document.getElementById("chat_text").value = '';
 }
-
 
 addEventListener('load', ()=>{
     display_board();
@@ -215,6 +212,6 @@ addEventListener('load', ()=>{
     const db = firebase.firestore();
     const user_dt = db.collection("games").doc(sessionStorage.getItem("id"));
     user_dt.get().then((doc) =>{
-        user_dt.update({chat: doc.data().chat + sessionStorage.getItem("user_name") + " joined! <br>"});
+        user_dt.update({chat: doc.data().chat + localStorage.getItem("user_name") + " joined! <br>"});
     });
 });

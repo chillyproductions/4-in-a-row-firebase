@@ -3,16 +3,17 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+    <title>4 in a row</title>
 
     <!-- update the version number as needed -->
-    <script defer src="/__/firebase/7.23.0/firebase-app.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/7.23.0/firebase-auth.js"></script>
-    <script defer src="/__/firebase/7.23.0/firebase-firestore.js"></script>
+    <script src="/__/firebase/8.0.0/firebase-app.js"></script>
+  
+    <!-- Add Firebase products that you want to use -->
+    <script src="/__/firebase/8.0.0/firebase-auth.js"></script>
+    <script src="/__/firebase/8.0.0/firebase-firestore.js"></script>
 
     <!-- initialize the SDK after all desired features are loaded -->
-    <script defer src="/__/firebase/init.js"></script>
+    <script src="/__/firebase/init.js"></script>
 
     <style media="screen">
       body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
@@ -30,10 +31,27 @@
     </style>
   </head>
   <body>
-    <div style="text-align: center;">
-        <button onclick="window.location.href='create.html'">Create Lobby</button>
-        <br>
-        <button onclick="window.location.href='join.html'">Join Lobby</button>
+    <div style="text-align: center;" id="logged_out" hidden>
+      <button onclick="login();">login</button>
     </div>
+
+    <section id="logged_in" hidden>
+      <div id="nav_bar">
+        <a onclick="logout();">logout</a>
+      </div>
+
+      <div style="text-align: center;">
+          
+          <div id="hello"></div>
+          <button onclick="window.location.href='create.html'">Create Lobby</button>
+          <br>
+          <button onclick="window.location.href='join.html'">Join Lobby</button>
+          <div style="text-align: center;" id="leaderboard"></div>
+      </div>
+    </section>
+    
+    <link rel="stylesheet" href="nav_bar.css">
+    <script src="leaderboard.js"></script>
+    <script src="account.js"></script>
   </body>
 </html>
