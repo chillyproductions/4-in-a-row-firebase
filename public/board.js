@@ -29,13 +29,17 @@ function display_board() {
         document.getElementById("board").innerHTML = s;
     });
     user_dt.onSnapshot((doc)=>{
-        if("lastmove" in doc.data()){
+        if(doc.data().lastmove[0] == -1){
+            display_board();
+        }
+        else if("lastmove" in doc.data()){
             board[doc.data().lastmove[0] -1][doc.data().lastmove[1]] = doc.data().lastmove[2] % 2 +1;
             draw(doc.data().lastmove[0], doc.data().lastmove[1], doc.data().lastmove[2]);
         }
         if("chat" in doc.data()){
             document.getElementById("chat").innerHTML = doc.data().chat;
         }
+        update_scores();
     })
 }
 
@@ -82,7 +86,7 @@ function win_check(row, colm, turn) {
     sum--;
 
     if (sum >= win_sum)
-        alert("win");
+        win();
 
 
     //horizontal
@@ -105,7 +109,7 @@ function win_check(row, colm, turn) {
     sum--;
 
     if (sum >= win_sum)
-        alert("win");
+        win();
 
     // diagonal down
     sum = 0;
@@ -135,7 +139,7 @@ function win_check(row, colm, turn) {
     sum--;
 
     if (sum >= win_sum)
-        alert("win");
+        win();
 
     // diagonal up
     sum = 0;
@@ -165,21 +169,26 @@ function win_check(row, colm, turn) {
     sum--;
 
     if (sum >= win_sum)
-        alert("win");
+        win();
 }
 
 function try_move(id){
     const db = firebase.firestore();
     const user_dt = db.collection("games").doc(sessionStorage.getItem("id"));
     user_dt.get().then((doc) =>{
-        if(doc.data().turn % 2 == 0 && sessionStorage.getItem("first") == "true"){
-            move(id, doc.data().turn);
-        }
-        else if(doc.data().turn % 2 == 1 && sessionStorage.getItem("first") == "false"){
-            move(id, doc.data().turn);
+        if(doc.data().started == true){
+            if(doc.data().turn % 2 == 0 && sessionStorage.getItem("first") == "true"){
+                move(id, doc.data().turn);
+            }
+            else if(doc.data().turn % 2 == 1 && sessionStorage.getItem("first") == "false"){
+                move(id, doc.data().turn);
+            }
+            else{
+                alert("its not ur turn");
+            }
         }
         else
-            alert("its not ur turn");
+            alert("awaiting second player");
     });
 }
 
@@ -198,20 +207,61 @@ function draw(irow, colm, turn){
 
 function submit_chat(){
     const db = firebase.firestore();
-    const user_dt = db.collection("games").doc(sessionStorage.getItem("id"));
+    const game_dt = db.collection("games").doc(sessionStorage.getItem("id"));
     var chat_text = document.getElementById("chat_text").value;
-    user_dt.get().then((doc) =>{
-        user_dt.update({chat: doc.data().chat + localStorage.getItem("user_name") +":f " + chat_text +"<br>"});
+    game_dt.get().then((doc) =>{
+        game_dt.update({chat: doc.data().chat + firebase.auth().currentUser.displayName +": " + chat_text +"<br>"});
     });
     document.getElementById("chat_text").value = '';
 }
 
+function win(){
+    const db = firebase.firestore();
+    const game_dt = db.collection("games").doc(sessionStorage.getItem("id"));
+    const user_dt = db.collection("users").doc(firebase.auth().currentUser.uid);
+    game_dt.get().then((game_doc) =>{
+        user_dt.get().then((user_doc) =>{        
+            if(game_doc.data().turn % 2 == 0 && sessionStorage.getItem("first") == "true"){
+                user_dt.update({wins: user_doc.data().wins + 1});
+                game_dt.update({first_wins: game_doc.data().first_wins +1});
+                alert(firebase.auth().currentUser.displayName +" wins");
+            }
+            else if(game_doc.data().turn % 2 == 1 && sessionStorage.getItem("first") == "false"){
+                user_dt.update({wins: user_doc.data().wins + 1});
+                game_dt.update({second_wins: game_doc.data().second_wins +1});
+                alert(firebase.auth().currentUser.displayName +" wins");
+            }
+            else{
+                user_dt.update({losses: user_doc.data().losses + 1});
+            }
+        })
+    })
+
+    update_scores();
+    game_dt.update({lastmove: [-1,-1,-1]});
+}
+
+function update_scores(){
+    const db = firebase.firestore();
+    const game_dt = db.collection("games").doc(sessionStorage.getItem("id"));
+    game_dt.get().then((game_doc) =>{
+        if(game_doc.data().players.length != 2){
+            document.getElementById("player1").innerHTML = "awating second player";
+        }
+        else{
+            document.getElementById("player1").innerHTML = game_doc.data().players[0] + ": " + game_doc.data().first_wins;
+            document.getElementById("player2").innerHTML = game_doc.data().players[1] + ": " + game_doc.data().second_wins;     
+        }
+    });
+}
+
 addEventListener('load', ()=>{
     display_board();
+    update_scores();
 
     const db = firebase.firestore();
-    const user_dt = db.collection("games").doc(sessionStorage.getItem("id"));
-    user_dt.get().then((doc) =>{
-        user_dt.update({chat: doc.data().chat + localStorage.getItem("user_name") + " joined! <br>"});
+    const game_dt = db.collection("games").doc(sessionStorage.getItem("id"));
+    game_dt.get().then((doc) =>{
+        game_dt.update({chat: doc.data().chat + firebase.auth().currentUser.displayName + " joined! <br>"});
     });
 });

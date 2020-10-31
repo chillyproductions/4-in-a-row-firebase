@@ -1,8 +1,12 @@
 addEventListener("load", ()=>{
-    document.getElementById("width").value = 7;
-    document.getElementById("height").value = 6;
-    document.getElementById("win_num").value = 4;
-    document.getElementById("page").hidden = false;
+    firebase.auth().onAuthStateChanged(() =>{
+        if(firebase.auth().currentUser != null){
+            document.getElementById("width").value = 7;
+            document.getElementById("height").value = 6;
+            document.getElementById("win_num").value = 4;
+            document.getElementById("page").hidden = false;
+        }
+    });
 });
 
 function submit(){
@@ -21,7 +25,10 @@ function submit(){
         win_sum: win_num,
         started: false,
         chat: "",
-        turn: 0
+        turn: 0,
+        first_wins: 0,
+        second_wins: 0,
+        players: [firebase.auth().currentUser.displayName]
     })
     .then(() =>{
         window.location.href = "board.html";

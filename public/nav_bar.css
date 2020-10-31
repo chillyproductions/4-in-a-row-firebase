@@ -1,4 +1,22 @@
-.nav_bar{
-    background-color: grey;
+.nav_bar {
+    width: 100%;
+    background-color: rgb(117, 117, 117);
+    overflow: auto;
+}
+  
+.nav_bar a {
+    float: left;
+    width: auto;
+    text-align: center;
+    padding: 12px;
+    transition: all 0.3s ease;
+}
+
+.nav_bar .out{
     float: right;
+}
+  
+
+.nav_bar a:hover{
+    background-color: white;
 }
