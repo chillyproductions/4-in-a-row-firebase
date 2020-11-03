@@ -8,8 +8,8 @@ function display_board() {
     document.getElementById("print_id").innerHTML = ("Room id: " + sessionStorage.getItem("id"));
 
     const db = firebase.firestore();
-    const user_dt = db.collection("games").doc(sessionStorage.getItem("id"));
-    user_dt.get().then((doc) =>{
+    const game_dt = db.collection("games").doc(sessionStorage.getItem("id"));
+    game_dt.get().then((doc) =>{
         rows = doc.data().size[0];
         colms = doc.data().size[1];
         win_sum = doc.data().win_sum;
@@ -28,19 +28,6 @@ function display_board() {
         s += "</table>";
         document.getElementById("board").innerHTML = s;
     });
-    user_dt.onSnapshot((doc)=>{
-        if(doc.data().lastmove[0] == -1){
-            display_board();
-        }
-        else if("lastmove" in doc.data()){
-            board[doc.data().lastmove[0] -1][doc.data().lastmove[1]] = doc.data().lastmove[2] % 2 +1;
-            draw(doc.data().lastmove[0], doc.data().lastmove[1], doc.data().lastmove[2]);
-        }
-        if("chat" in doc.data()){
-            document.getElementById("chat").innerHTML = doc.data().chat;
-        }
-        update_scores();
-    })
 }
 
 function move(id_string, turn) {
@@ -65,6 +52,8 @@ function move(id_string, turn) {
 }
 
 function win_check(row, colm, turn) {
+    const db = firebase.firestore();
+    const game_dt = db.collection("games").doc(sessionStorage.getItem("id"));
     //vertical
     var sum = 0;
     //down
@@ -85,9 +74,10 @@ function win_check(row, colm, turn) {
     }
     sum--;
 
-    if (sum >= win_sum)
-        win();
-
+    if (sum >= win_sum){
+        game_dt.update({win: true});
+        return
+    }
 
     //horizontal
     sum = 0;
@@ -108,9 +98,10 @@ function win_check(row, colm, turn) {
     }
     sum--;
 
-    if (sum >= win_sum)
-        win();
-
+    if (sum >= win_sum){
+        game_dt.update({win: true});
+        return
+    }
     // diagonal down
     sum = 0;
     //up left
@@ -138,9 +129,10 @@ function win_check(row, colm, turn) {
     }
     sum--;
 
-    if (sum >= win_sum)
-        win();
-
+    if (sum >= win_sum){
+        game_dt.update({win: true});
+        return
+    }
     // diagonal up
     sum = 0;
     //down left
@@ -168,8 +160,10 @@ function win_check(row, colm, turn) {
     }
     sum--;
 
-    if (sum >= win_sum)
-        win();
+    if (sum >= win_sum){
+        game_dt.update({win: true});
+        return
+    }
 }
 
 function try_move(id){
@@ -220,25 +214,29 @@ function win(){
     const game_dt = db.collection("games").doc(sessionStorage.getItem("id"));
     const user_dt = db.collection("users").doc(firebase.auth().currentUser.uid);
     game_dt.get().then((game_doc) =>{
-        user_dt.get().then((user_doc) =>{        
-            if(game_doc.data().turn % 2 == 0 && sessionStorage.getItem("first") == "true"){
+        user_dt.get().then(async (user_doc) =>{        
+
+            if((game_doc.data().turn -1) % 2 == 0 && sessionStorage.getItem("first") == "true"){
                 user_dt.update({wins: user_doc.data().wins + 1});
-                game_dt.update({first_wins: game_doc.data().first_wins +1});
-                alert(firebase.auth().currentUser.displayName +" wins");
+                await game_dt.update({first_wins: game_doc.data().first_wins +1});
+                alert(firebase.auth().currentUser.displayName + " wins");
             }
-            else if(game_doc.data().turn % 2 == 1 && sessionStorage.getItem("first") == "false"){
+            else if((game_doc.data().turn -1) % 2 == 1 && sessionStorage.getItem("first") == "false"){
                 user_dt.update({wins: user_doc.data().wins + 1});
-                game_dt.update({second_wins: game_doc.data().second_wins +1});
-                alert(firebase.auth().currentUser.displayName +" wins");
+                await game_dt.update({second_wins: game_doc.data().second_wins +1});
+                alert(firebase.auth().currentUser.displayName + " wins");
             }
             else{
                 user_dt.update({losses: user_doc.data().losses + 1});
+                if(firebase.auth().currentUser.displayName == game_doc.data().players[0])
+                    alert(game_doc.data().players[1] + " wins");
+                else
+                    alert(game_doc.data().players[0] + " wins");
             }
+            update_scores();
         })
     })
-
-    update_scores();
-    game_dt.update({lastmove: [-1,-1,-1]});
+    document.getElementById("again").hidden = false;
 }
 
 function update_scores(){
@@ -255,9 +253,51 @@ function update_scores(){
     });
 }
 
-addEventListener('load', ()=>{
+function start_listening(){
+    const db = firebase.firestore();
+    const game_dt = db.collection("games").doc(sessionStorage.getItem("id"));
+    game_dt.onSnapshot((doc) =>{
+        if("again" in doc.data()){
+            if(doc.data().again == true){
+                game_dt.update({again: false})
+                display_board();
+                document.getElementById("again").hidden = true;
+            }
+        }
+        if("win" in doc.data()){
+            if(doc.data().win == true){
+                game_dt.update({win: false});
+                win();
+            }
+        }
+        if("lastmove" in doc.data()){
+            board[doc.data().lastmove[0] -1][doc.data().lastmove[1]] = doc.data().lastmove[2] % 2 +1;
+            draw(doc.data().lastmove[0], doc.data().lastmove[1], doc.data().lastmove[2]);
+        }
+        if("chat" in doc.data()){
+            update_scores();
+            document.getElementById("chat").innerHTML = doc.data().chat;
+        }
+    })
+}
+
+function create_game(){
     display_board();
+    start_listening();
     update_scores();
+}
+
+function again(){
+    const db = firebase.firestore();
+    const game_dt = db.collection("games").doc(sessionStorage.getItem("id"));
+    game_dt.update({again: true});
+    game_dt.get().then((game_doc) =>{
+        game_dt.update({chat: game_dt.data().chat + firebase.auth().currentUser.displayName +" started another game<br>"})
+    });
+}
+
+addEventListener('load', ()=>{
+    create_game();
 
     const db = firebase.firestore();
     const game_dt = db.collection("games").doc(sessionStorage.getItem("id"));
