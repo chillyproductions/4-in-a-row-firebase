@@ -37,19 +37,20 @@
 
     <section id="logged_in" hidden>
       <div class="nav_bar">
-        <a>Stats</a>
         <a class="out" onclick="logout();">logout</a>
       </div>
 
       <div style="text-align: center;">
-          
           <div id="hello"></div>
           <button onclick="window.location.href='create.html'">Create Lobby</button>
           <br>
           <button onclick="window.location.href='join.html'">Join Lobby</button>
           <div style="text-align: center;" id="leaderboard"></div>
       </div>
+      <div id="leaderboard" style="text-align: center;">
+      </div>
     </section>
+
     
     <link rel="stylesheet" href="nav_bar.css">
     <script src="leaderboard.js"></script>
