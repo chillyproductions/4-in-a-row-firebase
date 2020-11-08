@@ -14,8 +14,6 @@ addEventListener("load", ()=>{
             document.getElementById("width").value = 7;
             document.getElementById("height").value = 6;
             document.getElementById("win_num").value = 4;
-            document.getElementById("page").hidden = false;
-            document.getElementById("lobby").hidden = false;
         }
     });
 });
