@@ -40,18 +40,49 @@
         <a class="out" onclick="logout();">logout</a>
       </div>
 
-      <div style="text-align: center;">
+      <div id="menu" style="text-align: center;">
           <div id="hello"></div>
-          <button onclick="window.location.href='create.html'">Create Lobby</button>
+          <button onclick="show_create();">Create Lobby</button>
           <br>
-          <button onclick="window.location.href='join.html'">Join Lobby</button>
+          <button onclick="show_join();">Join Lobby</button>
           <div style="text-align: center;" id="leaderboard"></div>
       </div>
+
+      <div id="create" hidden>
+        <div style="text-align: center;">Create Lobby</div>
+        <div id="page" style="text-align: center;" hidden>
+            Game Setting
+            <br>
+            width:
+            <input type="number" id='width' min="2" max="15">
+            <br>
+            height:
+            <input type="number" id="height" min="2" max="15">
+            <br>
+            amount in a row to win:
+            <input type="number" id="win_num" min="1" max="15">
+  
+            <button onclick="submit();">Create Lobby</button>
+        </div>
+      </div>
+
+      <div id="join" hidden style="text-align: center;">
+        Join lobby <br>
+        enter lobby id: <br>
+        <input type="number" id="game_id">
+        <br>
+        <button onclick="join();">Join</button>
+      </div>
+
       <div id="leaderboard" style="text-align: center;">
       </div>
     </section>
 
+
     
+
+    <script src="enter_game.js"></script>
+
     <link rel="stylesheet" href="nav_bar.css">
     <script src="leaderboard.js"></script>
     <script src="account.js"></script>
