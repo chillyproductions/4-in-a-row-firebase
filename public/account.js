@@ -32,8 +32,10 @@ addEventListener('load', () =>{
 })
 
 function login(){
-    const provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(provider);
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).then(() => {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        firebase.auth().signInWithPopup(provider);
+        })
 }
 
 function logout(){
