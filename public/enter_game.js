@@ -68,6 +68,6 @@ function join(){
             })
         }
         else
-            alert("game id doesnt excist");   
+            alert("game id doesnt exist");   
     });
 }

@@ -58,7 +58,6 @@ function win_check(row, colm, turn) {
     var sum = 0;
     //down
     for (let irow = row; irow >= 0; irow--) {
-        console.log(irow)
         if (board[irow][colm] == turn % 2 + 1)
             sum++;
         else
@@ -187,15 +186,15 @@ function try_move(id){
 }
 
 function draw(irow, colm, turn){
-    var color;
     if (turn % 2 == 0) {
-        document.getElementById(((irow - 1) * colms + colm).toString()).style.backgroundColor = 'green';
-        color = "green";
+        // document.getElementById(((irow - 1) * colms + colm).toString()).style.backgroundColor = 'green'
+        console.log(document.getElementById(((irow - 1) * colms + colm).toString()).innerHTML);
+        document.getElementById(((irow - 1) * colms + colm).toString()).innerHTML = '<div class="piece" style="background-color: green;"></div>';
     }
     
     else {
-        document.getElementById(((irow - 1) * colms + colm).toString()).style.backgroundColor = 'blue';
-        color = "blue"
+        // document.getElementById(((irow - 1) * colms + colm).toString()).style.backgroundColor = 'blue'
+        document.getElementById(((irow - 1) * colms + colm).toString()).innerHTML = '<div class="piece" style="background-color: blue;"></div>';
     }
 }
 
